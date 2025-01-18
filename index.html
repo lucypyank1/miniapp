@@ -18,16 +18,26 @@
 </head>
 <body>
     <h1>Добро пожаловать в MiniApp!</h1>
+    <div id="user-info">
+    </div>
     <button onclick="sendMessage()">Отправить сообщение</button>
 
     <script>
         function sendMessage() {
-            // Отправка сообщения в чат с ботом
             Telegram.WebApp.sendData("Привет от MiniApp!");
         }
 
-        // Инициализация WebApp
         Telegram.WebApp.ready();
+
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('user-info').innerHTML = `
+                <p>Имя: ${user.first_name} ${user.last_name || ''}</p>
+                <p>Username: @${user.username}</p>
+            `;
+        } else {
+            document.getElementById('user-info').innerHTML = '<p>Не удалось загрузить информацию о пользователе.</p>';
+        }
     </script>
 </body>
 </html>
