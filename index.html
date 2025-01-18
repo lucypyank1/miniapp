@@ -3,38 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniApp</title>
+    <title>Профиль пользователя</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
+        .profile {
+            margin-bottom: 20px;
+        }
+        .review {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        .stars {
+            color: gold;
         }
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать в MiniApp!</h1>
-    <div id="user-info">
+    <div class="profile">
+        <img src="profile_picture_url" alt="Profile Picture" width="100">
+        <h2 id="full-name">Имя пользователя</h2>
+        <p id="username">@username</p>
+        <div class="stars" id="rating">⭐⭐⭐☆☆</div>
     </div>
-    <button onclick="sendMessage()">Отправить сообщение</button>
+    <div id="reviews">
+        <!-- Отзывы будут добавлены здесь -->
+    </div>
 
     <script>
-        function sendMessage() {
-            Telegram.WebApp.sendData("Привет от MiniApp!");
-        }
-
-        Telegram.WebApp.ready();
-
+        // Получение данных о пользователе из WebApp
         const user = Telegram.WebApp.initDataUnsafe.user;
         if (user) {
-            document.getElementById('user-info').innerHTML = `
-                <p>Имя: ${user.first_name} ${user.last_name || ''}</p>
-                <p>Username: @${user.username}</p>
-            `;
+            document.getElementById('full-name').textContent = user.first_name;
+            document.getElementById('username').textContent = `@${user.username}`;
+            // Пример: получение данных из бота
+            const userData = {
+                fullName: "Энрики228",
+                username: "Krasava01",
+                rating: 3,
+                reviews: [
+                    { author: "alex3ev47", date: "24 марта 2020", text: "Ахуенный пацан", stars: 5 },
+                    { author: "Arkady Don", date: "18 января 2019", text: "Черт!!!", stars: 1 }
+                ]
+            };
+
+            document.getElementById('rating').textContent = '⭐'.repeat(userData.rating) + '☆'.repeat(5 - userData.rating);
+
+            const reviewsContainer = document.getElementById('reviews');
+            userData.reviews.forEach(review => {
+                const reviewElement = document.createElement('div');
+                reviewElement.className = 'review';
+                reviewElement.innerHTML = `
+                    <div class="stars">${'⭐'.repeat(review.stars)}</div>
+                    <p><strong>${review.author}</strong> - ${review.date}</p>
+                    <p>${review.text}</p>
+                `;
+                reviewsContainer.appendChild(reviewElement);
+            });
         } else {
             document.getElementById('user-info').innerHTML = '<p>Не удалось загрузить информацию о пользователе.</p>';
         }
