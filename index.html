@@ -31,16 +31,13 @@
         <div class="stars" id="rating">⭐⭐⭐☆☆</div>
     </div>
     <div id="reviews">
-        <!-- Отзывы будут добавлены здесь -->
     </div>
 
     <script>
-        // Получение данных о пользователе из WebApp
         const user = Telegram.WebApp.initDataUnsafe.user;
         if (user) {
             document.getElementById('full-name').textContent = user.first_name;
             document.getElementById('username').textContent = `@${user.username}`;
-            // Пример: получение данных из бота
             const userData = {
                 fullName: "Энрики228",
                 username: "Krasava01",
