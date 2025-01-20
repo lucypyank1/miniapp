@@ -3,67 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль пользователя</title>
+    <title>Оценка пользователя</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
         }
-        .profile {
-            margin-bottom: 20px;
-        }
-        .review {
-            border-top: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-        .stars {
+        .rating {
+            font-size: 24px;
             color: gold;
         }
     </style>
 </head>
 <body>
-    <div class="profile">
-        <img src="profile_picture_url" alt="Profile Picture" width="100">
-        <h2 id="full-name">Имя пользователя</h2>
-        <p id="username">@username</p>
-        <div class="stars" id="rating">⭐⭐⭐☆☆</div>
-    </div>
-    <div id="reviews">
-    </div>
+    <h1>Ваша оценка</h1>
+    <div id="user-rating" class="rating">Загрузка...</div>
 
     <script>
+        // Получение данных о пользователе из WebApp
         const user = Telegram.WebApp.initDataUnsafe.user;
         if (user) {
-            document.getElementById('full-name').textContent = user.first_name;
-            document.getElementById('username').textContent = `@${user.username}`;
-            const userData = {
-                fullName: "Энрики228",
-                username: "Krasava01",
-                rating: 3,
-                reviews: [
-                    { author: "alex3ev47", date: "24 марта 2020", text: "Ахуенный пацан", stars: 5 },
-                    { author: "Arkady Don", date: "18 января 2019", text: "Черт!!!", stars: 1 }
-                ]
-            };
-
-            document.getElementById('rating').textContent = '⭐'.repeat(userData.rating) + '☆'.repeat(5 - userData.rating);
-
-            const reviewsContainer = document.getElementById('reviews');
-            userData.reviews.forEach(review => {
-                const reviewElement = document.createElement('div');
-                reviewElement.className = 'review';
-                reviewElement.innerHTML = `
-                    <div class="stars">${'⭐'.repeat(review.stars)}</div>
-                    <p><strong>${review.author}</strong> - ${review.date}</p>
-                    <p>${review.text}</p>
-                `;
-                reviewsContainer.appendChild(reviewElement);
-            });
+            // Запрос к вашему серверу для получения оценки
+            fetch(`/get_user_rating?telegram_id=${user.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('user-rating').textContent = `Ваша оценка: ${data.rating}`;
+                })
+                .catch(error => {
+                    document.getElementById('user-rating').textContent = 'Ошибка загрузки оценки';
+                });
         } else {
-            document.getElementById('user-info').innerHTML = '<p>Не удалось загрузить информацию о пользователе.</p>';
+            document.getElementById('user-rating').textContent = 'Не удалось загрузить информацию о пользователе.';
         }
+
+        // Инициализация WebApp
+        Telegram.WebApp.ready();
     </script>
 </body>
 </html>
