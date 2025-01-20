@@ -1,44 +1,48 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оценка пользователя</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        .rating {
-            font-size: 24px;
-            color: gold;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <h1>Ваша оценка</h1>
-    <div id="user-rating" class="rating">Загрузка...</div>
+  <h1>Добро пожаловать!</h1>
+  <p>Введите Telegram ID для проверки рейтинга:</p>
+  <input type="text" id="telegramId" placeholder="Введите Telegram ID">
+  <button onclick="getUserRating()">Проверить рейтинг</button>
+  <p id="result"></p>
 
-    <script>
-        // Получение данных о пользователе из WebApp
-        const user = Telegram.WebApp.initDataUnsafe.user;
-        if (user) {
-            // Запрос к вашему серверу для получения оценки
-            fetch(`/get_user_rating?telegram_id=${user.id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('user-rating').textContent = `Ваша оценка: ${data.rating}`;
-                })
-                .catch(error => {
-                    document.getElementById('user-rating').textContent = 'Ошибка загрузки оценки';
-                });
-        } else {
-            document.getElementById('user-rating').textContent = 'Не удалось загрузить информацию о пользователе.';
-        }
+  <script>
+    // Получение рейтинга через API
+    async function getUserRating() {
+      const telegramId = document.getElementById('telegramId').value;
+      if (!telegramId) {
+        alert('Введите Telegram ID!');
+        return;
+      }
+      
+      const response = await fetch(`https://app-a30zq98n6-lucys-projects-24f006e5.vercel.app/get_user_rating?telegram_id=${telegramId}`);
+      const data = await response.json();
 
-        // Инициализация WebApp
-        Telegram.WebApp.ready();
-    </script>
+      if (response.ok) {
+        document.getElementById('result').textContent = `Рейтинг: ${data.rating}`;
+      } else {
+        document.getElementById('result').textContent = data.error || 'Ошибка получения данных';
+      }
+    }
+  </script>
 </body>
 </html>
